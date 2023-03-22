@@ -1,5 +1,25 @@
+import unittest
 # Note:: The problem is taken from Berkeley's CS61B.
 # Reference: https://github.com/Berkeley-CS61B/lectureCode-sp23/blob/main/lec6_testing/Sort.java
+
+# The main purpose of this problem is to drill `Testing` as an important fundamental before actually writing code.
+# TLDR; use Method 2 & 3 are the optimal ways for development work.
+# There are 2 methods to testing:
+# Method 1 (weaker): Autograder Driven Development
+#       (1) Test entire bulk of the function without unit-testing 
+#       (2) Using `print` statements
+#       Note: In the words of Josh Hug -- "Print statements are not inherently evil. While they are a weak tool, they are very easy to use"
+#
+# Method 2 (Optimal): 
+#        (1) Using `Truth` + `JUnit` libraries
+#         Reference for (1): https://truth.dev/ 
+#         Reference for (2): https://junit.org/junit5/
+#   
+# Method 3 (TDD):
+#       (1) Red -- Test Failed
+#       (2) Green -- Test Passed
+#       (3) Yellow -- Refactor 
+#        --- Repeat Step (1) ---
 
 # Definition of Lexicographic
 # case 1: a = "aa" and b = "ab" --> a[1] < b[1] --> output: ["aa", "ab"]
@@ -35,7 +55,7 @@ def check_is_lexicographic_sorted(input_a, input_b):
         return False
     return True
 
-# Testing
+# Example of testing via "Autograder Driven Development", where we simply use `print()` statements.
 print('~~~~~ testing of lexicographic_sorted ~~~~~')
 print(check_is_lexicographic_sorted("aaa", "aa")) # Expected: False
 print(check_is_lexicographic_sorted("aa", "ab"))  # Expected: True
@@ -76,7 +96,7 @@ def merge_sort(cur_arr):
     return res
 
 
-# Testing
+# Example of testing via "Autograder Driven Development", where we simply use `print()` statements.
 print('~~~~~ testing of merge_sort ~~~~~')
 print(merge_sort(["the", "he", "is"])) # Expected: ["he", "is", "the"]
 print(merge_sort(["aaa", "aa", "aaaa", "aaaaaaaa"])) # Expected: ['aa', 'aaa', 'aaaa', 'aaaaaaaa']
@@ -84,7 +104,54 @@ sample_input = ["he", "is", "the", "agoyatis", "of", "mr.", "conchis"]
 print(merge_sort(sample_input)) # Expected: ['agoyatis', 'conchis', 'he', 'is', 'mr.', 'of', 'the']
     
 
+# Ref: https://docs.python.org/3/library/unittest.html
+class TestSort(unittest.TestCase):
+    # Test for lexicographic function
+    def test_check_is_lexicographic_same_character_but_one_with_longer_length(self):
+        result = check_is_lexicographic_sorted("aaa", "aa")
+        self.assertFalse(result)
+
+    def test_check_is_lexicographic_order_with_one_differing_character(self):
+        result = check_is_lexicographic_sorted("aa", "ab")
+        self.assertTrue(result)
+
+    def test_check_is_lexicographic_order_with_one_differing_character_2(self):
+        result = check_is_lexicographic_sorted("ab", "aa")
+        self.assertFalse(result)
+
+    def test_check_is_lexicographic_order_with_one_differing_character_3(self):
+        result = check_is_lexicographic_sorted("aab", "aa")
+        self.assertFalse(result)
+
+    def test_check_is_lexicographic_order_with_one_differing_character_4(self):
+        result = check_is_lexicographic_sorted("h", "i")
+        self.assertTrue(result)
+
+    def test_check_is_lexicographic_order_1(self):
+        result = check_is_lexicographic_sorted('conchis','agoyatis')
+        self.assertFalse(result)
+
+    def test_check_is_lexicographic_order_2(self):
+        result = check_is_lexicographic_sorted('the','is')
+        self.assertFalse(result)
     
+    # Test for Merge Sort function
+    def test_merge_sort_1(self):
+        result = merge_sort(["the", "he", "is"])
+        expected = ["he", "is", "the"]
+        self.assertEqual(result, expected)
 
+    def test_merge_sort_2(self):
+        result = merge_sort(["aaa", "aa", "aaaa", "aaaaaaaa"])
+        expected = ['aa', 'aaa', 'aaaa', 'aaaaaaaa']
+        self.assertEqual(result, expected)
 
+    def test_merge_sort_3(self):
+        result = merge_sort(["he", "is", "the", "agoyatis", "of", "mr.", "conchis"])
+        expected = ['agoyatis', 'conchis', 'he', 'is', 'mr.', 'of', 'the']
+        self.assertEqual(result, expected)
+        
+
+if __name__ == '__main__':
+    unittest.main()
 
